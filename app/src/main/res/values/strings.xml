@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- About -->
+    <string name="link">Website: github.com/dkim0419/SoundRecorder</string>
+    <string name="app_name">录音与播放</string>
+
+</resources>
