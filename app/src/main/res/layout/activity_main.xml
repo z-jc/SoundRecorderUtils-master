@@ -1,57 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="#eee"
-    android:gravity="center"
-    tools:context="com.sid.soundrecorderutils.MainActivity">
+    android:orientation="vertical"
+    tools:context="com.sid.soundrecorderutils.view.MainActivity">
 
-    <LinearLayout
-        android:layout_margin="20dp"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:background="@drawable/record_progress_bar"
-        android:gravity="center_horizontal">
-
-        <TextView
-            android:id="@+id/tv_clock"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="长按开始录音" />
-    </LinearLayout>
+    <include
+        android:id="@+id/lv_title"
+        layout="@layout/title"></include>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:layout_height="wrap_content">
-        <Button
-            android:layout_weight="1"
-            android:id="@+id/btn_press"
-            android:background="#fff"
-            android:layout_margin="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text="按住录音" />
-        <Button
-            android:layout_weight="1"
-            android:id="@+id/btn_play"
-            android:background="#fff"
-            android:layout_margin="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text="按住播放" />
+        android:layout_height="match_parent"
+        android:layout_below="@+id/lv_title"
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btn_take_photo"
-            android:text="拍照"
-            android:visibility="gone"
-            android:layout_weight="1"
-            android:layout_margin="10dp"
-            android:background="#fff"
+        <TextView
+            android:id="@+id/tv_clock"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/record_progress_bar_background"
+            android:gravity="center"
+            android:text="按下开始录音"
+            android:textColor="@color/colorPrimary" />
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_press"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_select"
+                android:text="按下录音" />
+
+            <!--<Button
+                android:id="@+id/btn_play"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_select"
+                android:text="按下播放" />-->
+
+            <Button
+                android:id="@+id/btn_take_photo"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_select"
+                android:text="按下拍照" />
+
+            <Button
+                android:id="@+id/btn_uplode"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_select"
+                android:text="上传文件" />
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+
+</RelativeLayout>
