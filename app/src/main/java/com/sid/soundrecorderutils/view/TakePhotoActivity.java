@@ -1,11 +1,10 @@
-package com.sid.soundrecorderutils;
+package com.sid.soundrecorderutils.view;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Environment;
@@ -20,19 +19,21 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.sid.soundrecorderutils.R;
+import com.sid.soundrecorderutils.util.DateUtil;
+
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class TakePhotoActivity extends Activity {
     RelativeLayout relativeLayout = null;
-    private static final String PATH_IMAGES = Environment.getExternalStorageDirectory().getAbsolutePath()
-            + File.separator + "easy_check/";
+    public static String PATH_IMAGES = Environment.getExternalStorageDirectory().getAbsolutePath()
+            + File.separator + "SoundRecord/image/";
     private Camera camera = null;
     private TakePhotoActivity.CameraView cv = null;
     List<String> dList = new ArrayList<>();
@@ -49,7 +50,7 @@ public class TakePhotoActivity extends Activity {
                     LinearLayout.LayoutParams.FILL_PARENT,
                     LinearLayout.LayoutParams.FILL_PARENT);
             relativeLayout.addView(cv, params);
-            dList.add(PATH_IMAGES + "IMG_" + (dList.size() + 1) + ".JPG");
+            dList.add(PATH_IMAGES + DateUtil.getDate() + ".jpg");
             Log.e("TAG", "" + dList.size());
             if (dList.size() == 1) {
                 saveFile(data, dList.get(0));
@@ -90,8 +91,9 @@ public class TakePhotoActivity extends Activity {
                 Toast.makeText(TakePhotoActivity.this, dList.size() + "张", Toast.LENGTH_SHORT).show();
                 if (dList.size() == 1) {
                     Intent intent = new Intent();
-                    intent.putStringArrayListExtra("list", (ArrayList<String>) dList);
-                    setResult(101, intent);
+                    intent.putExtra("imgPath", dList.get(0));
+                    intent.putExtra("imgName", dList.get(0).substring(dList.get(0).length() - 23, dList.get(0).length()));
+                    setResult(222, intent);
                     TakePhotoActivity.this.finish();
                 }
             } catch (IOException e) {
@@ -151,28 +153,32 @@ public class TakePhotoActivity extends Activity {
                     Log.e("TAG", "surfaceChanged...");
                     int PreviewWidth = 0;
                     int PreviewHeight = 0;
+                    Camera.Parameters parameters = camera.getParameters();
+                    //获得相机支持的照片尺寸,选择合适的尺寸
                     WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);//获取窗口的管理器
                     Display display = wm.getDefaultDisplay();//获得窗口里面的屏幕
-                    Camera.Parameters parameters = camera.getParameters();
-                    // 选择合适的预览尺寸
-                    List<Camera.Size> sizeList = parameters.getSupportedPreviewSizes();
-                    // 如果sizeList只有一个我们也没有必要做什么了，因为就他一个别无选择
-                    if (sizeList.size() > 1) {
-                        Iterator<Camera.Size> itor = sizeList.iterator();
-                        while (itor.hasNext()) {
-                            Camera.Size cur = itor.next();
-                            if (cur.width >= PreviewWidth
-                                    && cur.height >= PreviewHeight) {
-                                PreviewWidth = cur.width;
-                                PreviewHeight = cur.height;
+                    List<Camera.Size> sizes = parameters.getSupportedPictureSizes();
+                    int maxSize = Math.max(display.getWidth(), display.getHeight());
+                    int length = sizes.size();
+                    if (maxSize > 0) {
+                        for (int i = 0; i < length; i++) {
+                            if (maxSize <= Math.max(sizes.get(i).width, sizes.get(i).height)) {
+                                parameters.setPictureSize(sizes.get(i).width, sizes.get(i).height);
                                 break;
                             }
                         }
                     }
-
-                    parameters.setPreviewSize(display.getWidth(), display.getHeight()); //获得摄像区域的大小
-                    parameters.setPictureFormat(PixelFormat.JPEG);
-                    parameters.setPictureSize(display.getWidth(), display.getHeight());//设置拍出来的屏幕大小
+                    List<Camera.Size> ShowSizes = parameters.getSupportedPreviewSizes();
+                    int showLength = ShowSizes.size();
+                    if (maxSize > 0) {
+                        for (int i = 0; i < showLength; i++) {
+                            if (maxSize <= Math.max(ShowSizes.get(i).width, ShowSizes.get(i).height)) {
+                                parameters.setPreviewSize(ShowSizes.get(i).width, ShowSizes.get(i).height);
+                                break;
+                            }
+                        }
+                    }
+                    camera.setParameters(parameters);
                     camera.setParameters(parameters);//把上面的设置 赋给摄像头
                     camera.startPreview();
                     camera.autoFocus(new Camera.AutoFocusCallback() {

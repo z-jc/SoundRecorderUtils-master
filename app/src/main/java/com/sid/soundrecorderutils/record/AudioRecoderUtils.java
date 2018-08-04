@@ -1,9 +1,12 @@
-package com.sid.soundrecorderutils;
+package com.sid.soundrecorderutils.record;
 
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
+
+import com.sid.soundrecorderutils.util.DateUtil;
+import com.sid.soundrecorderutils.util.LogUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,33 +15,19 @@ import java.io.IOException;
  * 录音类
  */
 public class AudioRecoderUtils {
-
-    //文件路径
+    private String TAG = "AudioRecoderUtils";
     private String filePath;
-    //文件夹路径
-    private String FolderPath;
-
+    public static String MP3_PATH = Environment.getExternalStorageDirectory() + "/SoundRecord/record/";
+    private String FolderPath = MP3_PATH;
     private MediaRecorder mMediaRecorder;
-    private final String TAG = "fan";
     public static final int MAX_LENGTH = 1000 * 60 * 10;// 最大录音时长1000*60*10;
 
     private OnAudioStatusUpdateListener audioStatusUpdateListener;
 
-    /**
-     * 文件存储默认sdcard/record
-     */
     public AudioRecoderUtils() {
-        //默认保存路径为/sdcard/record/下
-        this(Environment.getExternalStorageDirectory() + "/record/");
-    }
-
-    public AudioRecoderUtils(String filePath) {
-
-        File path = new File(filePath);
+        File path = new File(FolderPath);
         if (!path.exists())
             path.mkdirs();
-
-        this.FolderPath = filePath;
     }
 
     private long startTime;
@@ -68,7 +57,7 @@ public class AudioRecoderUtils {
              */
             mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
-            filePath = FolderPath + System.currentTimeMillis() + ".mp3";
+            filePath = FolderPath + DateUtil.getDate() + ".mp3";
             /* ③准备 */
             mMediaRecorder.setOutputFile(filePath);
             mMediaRecorder.setMaxDuration(MAX_LENGTH);
@@ -91,7 +80,7 @@ public class AudioRecoderUtils {
      * 停止录音
      */
     public long stopRecord() {
-        if (mMediaRecorder == null){
+        if (mMediaRecorder == null) {
             return 0L;
         }
         endTime = System.currentTimeMillis();
@@ -127,14 +116,22 @@ public class AudioRecoderUtils {
             mMediaRecorder.release();
             mMediaRecorder = null;
         } catch (RuntimeException e) {
-            mMediaRecorder.reset();
-            mMediaRecorder.release();
-            mMediaRecorder = null;
+            try {
+                mMediaRecorder.reset();
+                mMediaRecorder.release();
+                mMediaRecorder = null;
+            } catch (NullPointerException e1) {
+                Log.e("TAG", "空指针异常...");
+            }
         }
-        File file = new File(filePath);
-        if (file.exists())
-            file.delete();
-        filePath = "";
+        try {
+            File file = new File(filePath);
+            if (file.exists())
+                file.delete();
+            filePath = "";
+        } catch (NullPointerException e) {
+            LogUtils.e(TAG, "cancelRecord:" + e.toString());
+        }
     }
 
     private final Handler mHandler = new Handler();

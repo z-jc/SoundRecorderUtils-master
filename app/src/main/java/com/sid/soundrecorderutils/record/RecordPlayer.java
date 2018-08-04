@@ -1,4 +1,4 @@
-package com.sid.soundrecorderutils;
+package com.sid.soundrecorderutils.record;
 
 import android.content.Context;
 import android.media.MediaPlayer;
@@ -19,7 +19,8 @@ public class RecordPlayer {
 
     private Context mcontext;
     private Handler mHandler;
-    public RecordPlayer(Context context,Handler handler) {
+
+    public RecordPlayer(Context context, Handler handler) {
         this.mcontext = context;
         this.mHandler = handler;
     }
@@ -61,7 +62,6 @@ public class RecordPlayer {
             mediaPlayer.pause();
             Log.e("TAG", "暂停播放");
         }
-
     }
 
     // 停止播放录音
